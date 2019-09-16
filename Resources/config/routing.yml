@@ -1,0 +1,54 @@
+lesson.cancel:
+    path: /lesson/cancel
+    defaults: { _controller: LessonBundle:Lesson:cancel }
+    methods: ['POST']
+lesson.migrate:
+    path: /lesson/migrate
+    defaults: { _controller: LessonBundle:Lesson:migrate }
+    methods: ['GET']
+    
+lesson.classroom.enter:
+    path: /lesson/{lessonId}/classroom
+    defaults: { _controller: LessonBundle:Lesson:enter }
+    methods: ['GET']
+
+lesson.classroom.save:
+    path: /lesson/{lessonId}/classroom/save
+    defaults: { _controller: LessonBundle:Lesson:save }
+    methods: ['POST']
+
+lesson.classroom.upload:
+    path: /lesson/{lessonId}/classroom/upload
+    defaults: { _controller: LessonBundle:Lesson:upload }
+    methods: ['POST']
+
+lesson.classroom.auth:
+    path: /lesson/{lessonId}/classroom/auth
+    defaults: { _controller: LessonBundle:Lesson:auth }
+    methods: ['POST']
+
+lesson.ics_file.generate:
+    path: /lesson/{lessonId}/icalendar/get
+    defaults: { _controller: LessonBundle:Lesson:generateIcsFile }
+    methods: ['GET']
+    
+lesson.finish:
+    path: /lesson/finish
+    defaults: { _controller: LessonBundle:Lesson:finish }
+    methods: ['POST']
+    
+lesson.feedback.create:
+    path: /lesson/{lessonId}/feedback/create
+    defaults: { _controller: LessonBundle:Feedback:create }
+    
+lesson.feedback.view:
+    path: /lesson/{lessonId}/feedback/view
+    defaults: { _controller: LessonBundle:Feedback:view }
+    
+lesson.resources.manage:
+    path: /lesson/{lessonId}/resources/manage
+    defaults: { _controller: LessonBundle:Lesson:manageResources }
+    
+lesson.call:
+    path: /lesson/{lessonId}/call
+    defaults: { _controller: LessonBundle:Lesson:call }

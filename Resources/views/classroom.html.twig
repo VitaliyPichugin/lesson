@@ -1,0 +1,105 @@
+{% extends "::base.html.twig" %}
+
+{% block title %}LessonBundle::classroom{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="{{ asset('css/classroom.min.css') }}" rel="stylesheet">
+{% endblock %}
+{% block body_class_container %}container-fluid{% endblock %}
+{% block body %}
+    <div class="row">
+        <div class="col-xs-9">
+            <div class="row">
+                <div class="col-xs-5">
+                    <h1>Learning {{ lesson.purchase.language }}</h1>
+                </div>
+                <div class="col-xs-3 col-xs-offset-1">
+                    <span class="glyphicon glyphicon-time"></span><span id="lesson-timer">-</span>
+                </div>
+                {% if lesson.status == constant('STATUS_INITIALIZED', lesson) %}
+                    <div class="col-xs-3">
+                        <form id="lesson-finish-form" action="{{ path('lesson.finish') }}" method="POST">
+                            <input type="hidden" name="lessonId" value="{{ lesson.id }}" />
+                            <button class="btn btn-lg btn-primary btn-block" type="submit">Finish lesson</button>
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <div id="summernote-pb" class="progress progress-lg">
+                        <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                            <span class="sr-only">Loading lesson content</span>
+                        </div>
+                    </div>
+                    <textarea id="summernote" class="hidden"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-3">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="embed-responsive embed-responsive-4by3">
+                        <div id="tokbox-my-stream-placeholder"></div>
+                    </div>
+                    <div class="embed-responsive embed-responsive-4by3">
+                        <div id="tokbox-other-stream-placeholder"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <h3>Objectives</h3>
+                    {% if lesson.objectives|length > 0 %}
+                        <ul>
+                            {% for objective in lesson.objectives %}
+                                <li>{{ objective }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <span>No objectives set</span>
+                    {% endif %}
+                </div>
+                <div class="col-xs-12">
+                    <h3>Resources</h3>
+                    {% if lesson.resources|length > 0 %}
+                        <ul>
+                            {% for resource in lesson.resources %}
+                                <li><a href="{{ resource.path }}">{{ resource.name }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <span>No objectives set</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        ;(function($){
+            classroom = {};
+            classroom.drive = {};
+            classroom.user = {};
+            classroom.lesson = {};
+            classroom.ot = {};
+            classroom.lesson.editable = {{ is_granted('edit', lesson) ? 'true' : 'false' }};
+            classroom.user.type = '{{ 'ROLE_STUDENT' in app.user.roles ? 'student' : 'teacher' }}';
+            classroom.user.googleEmail = '{{ app.user.googleEmail }}';
+            classroom.user.name = '{{ app.user.firstName }}';
+            classroom.drive.fileId = '{{ lesson.driveFileId }}';
+            classroom.drive.clientId = '{{ google_client_id }}';
+            classroom.user.accessToken = '{{ googleToken|json_encode|raw }}';
+            classroom.drive.scope = '{{ google_scopes|join(' ') }}';
+            classroom.ot.apiKey = '{{ tokbox_api_key }}';
+            classroom.ot.sessionId = '{{ lesson.openTokSessionId }}';
+            classroom.ot.token = '{{ otToken }}';
+            classroom.lesson.startDate = '{{ lesson.startDate.format('Y-m-d H:i:sO') }}';
+            classroom.lesson.length = {{ lesson.purchase.lessonLength }};
+        })(jQuery);
+    </script>
+    <script src="{{ asset('js/classroom.min.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,79 @@
+services:
+    lesson.lesson_manager:
+        class: LessonBundle\Model\FileLessonManager
+        parent: app.base_manager
+        calls:
+            - ['setLessonDirectory', ['%lessons_directory%']]
+            - ['setOpenTokHelper', ['@lesson.utils.open_tok']]
+            - ['setTranslator', ['@translator']]
+
+    lesson.migrate_manager:
+        class: LessonBundle\Model\GoogleMigrateManager
+        parent: app.base_manager
+        calls:
+            - ['setLessonDirectory', ['%lessons_directory%']]
+            - ['setPurchaseManager', ['@teaching.purchase_manager']]
+
+#        class: LessonBundle\Model\GoogleLessonManager
+#        parent: app.base_manager
+#        calls:
+#            - ['setGoogleServices', ['@google.client.factory', '@google.service.factory']]
+#            - ['setOpenTokHelper', ['@lesson.utils.open_tok']]
+            
+    lesson.feedback_manager:
+        class: LessonBundle\Model\FeedbackManager
+        parent: app.base_manager
+        
+    lesson.security.lesson_voter:
+        class: LessonBundle\Security\LessonVoter
+        public: false
+        tags:
+            - { name: security.voter }
+
+    lesson.security.lesson_feedback_voter:
+        class: LessonBundle\Security\LessonFeedbackVoter
+        public: false
+        tags:
+            - { name: security.voter }
+            
+    lesson.listener.feedback:
+        class: LessonBundle\Listener\FeedbackListener
+        arguments:
+            - '@lesson.lesson_manager'
+            - '@security.token_storage'
+            - '@translator'
+            - '@router'
+        tags:
+            - { name: kernel.event_listener, event: kernel.controller }
+
+    lesson.log_manager:
+        class: LessonBundle\Model\LogManager
+        parent: app.base_manager
+
+    lesson.listener.lesson_log:
+        class: LessonBundle\Listener\LessonLogSubscriber
+        arguments:
+            - '@lesson.log_manager'
+        tags:
+            - { name: kernel.event_subscriber }
+
+    lesson.listener.lesson:
+        class: LessonBundle\Listener\LessonSubscriber
+        calls:
+            - ['setContainer', ['@service_container']]
+        tags:
+            - { name: kernel.event_subscriber }
+            
+    lesson.utils.open_tok:
+        class: LessonBundle\Utils\OpenTokHelper
+        arguments:
+            - '%tokbox_api_key%'
+            - '%tokbox_api_secret%'
+            - '%tokbox_session_routed_mode%'
+
+    lesson.twig.extension.feedback_status:
+        class: LessonBundle\Twig\Extension\LessonFeedbackStatusExtension
+        tags:
+            - { name: twig.extension }
+        calls:
+            - ['setContainer', ['@service_container']]

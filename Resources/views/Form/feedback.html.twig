@@ -1,0 +1,12 @@
+{{ form_start(form) }}
+    {{ form_errors(form) }}
+
+    {% for row in form.children %}
+        {{ form_row(row) }}
+    {% endfor %}
+
+    <button class="btn btn-lg btn-success" type="submit">
+        Submit
+    </button>
+
+{{ form_end(form) }}

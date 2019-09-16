@@ -1,0 +1,13 @@
+{% set stars %}
+    {% for i in range(1, scale) %}
+        <span class="star"></span>
+    {% endfor %}
+{% endset %}
+{% spaceless %}
+<div class="star-rating" data-scale="{{ scale }}" data-rating="{{ rating }}">      
+    {{ stars|raw }}
+    <div class="rating" style="width: {{ width }}%">        
+        {{ stars|raw }}
+    </div>
+</div>
+{% endspaceless %}
